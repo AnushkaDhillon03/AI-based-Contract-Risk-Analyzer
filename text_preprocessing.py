@@ -1,9 +1,6 @@
 
-from __future__ import annotations
-
 import logging
 import re
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -71,12 +68,14 @@ class TextPreprocessor:
                 " ",
                 text,
             )
+            # Remove standalone runs of % that are not attached to numbers
+            text = re.sub(r"(?<!\d)%+(?!\d)", " ", text)
 
             # Multiple spaces
             text = re.sub(r"[ ]{2,}", " ", text)
 
             # Excessive blank lines
-            text = re.sub(r"\n{3,}", "\n\n", text)
+            text = re.sub(r"\n\s*\n+", "\n\n", text)
 
             text = text.lower().strip()
 
@@ -90,3 +89,39 @@ class TextPreprocessor:
             raise RuntimeError(
                 f"Text preprocessing failed: {exc}"
             ) from exc
+
+# Raw contract text with formatting issues
+raw_text = """
+CONTRACT AGREEMENT
+
+
+
+1.    Confidentiality
+
+	The Parties agree to keep all confidential information private.
+
+
+
+
+1.1    Non-Disclosure
+
+The Recipient shall not disclose any information to third parties.
+
+
+2.    Payment Terms
+
+Payment shall be made within 30 days after invoice receipt.
+
+### $$$%%%@@@!!!
+
+"""
+
+preprocessor = TextPreprocessor(enable_lemmatization=False)
+
+cleaned_text = preprocessor.preprocess(raw_text)
+
+print("===== ORIGINAL TEXT =====")
+print(raw_text)
+
+print("\n===== CLEANED TEXT =====")
+print(cleaned_text)
