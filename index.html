@@ -244,7 +244,7 @@ async function analyze() {
   if (selectedLevel !== 'ALL') body.risk_level = selectedLevel;
 
   try {
-    const res = await fetch('http://127.0.0.1:8080/api/v1/risk-analyze', {
+    const res = await fetch('/api/v1/risk-analyze', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
