@@ -4,3 +4,7 @@ pydantic
 rapidfuzz
 spacy
 ollama
+streamlit
+pandas
+plotly
+requests
