@@ -1150,3 +1150,57 @@ Damages may be recovered.
 
     print("\nFull JSON Report:")
     print(json.dumps(report, indent=4))
+
+
+def run_pipeline_evaluation(
+    original_contract: str,
+    clauses: list,
+    summary: str,
+    clause_dictionary: dict
+) -> dict:
+    """
+    Convenience wrapper used by app.py's run_pipeline().
+    Builds everything UnifiedEvaluator needs and runs the full evaluation.
+    """
+    allowed_categories = list(clause_dictionary.keys())
+    evaluator = UnifiedEvaluator(allowed_categories=allowed_categories)
+
+    raw_llm_output = json.dumps(clauses)
+
+    high_risks, medium_risks, low_risks = [], [], []
+    clause_categories = set()
+
+    for clause in clauses:
+        clause_categories.add(clause.get("clause_type", "Unknown"))
+        for risk in clause.get("risks", []):
+            level = (risk.get("level") or "").upper()
+            risk_name = risk.get("risk", "")
+            if level == "HIGH":
+                high_risks.append(risk_name)
+            elif level == "MEDIUM":
+                medium_risks.append(risk_name)
+            elif level == "LOW":
+                low_risks.append(risk_name)
+
+    structured_input = {
+        "high_risks": high_risks,
+        "medium_risks": medium_risks,
+        "low_risks": low_risks,
+        "clause_categories": list(clause_categories)
+    }
+
+    try:
+        return evaluator.evaluate(
+            raw_llm_output=raw_llm_output,
+            llm_results=clauses,
+            expected_clause_count=len(clauses),
+            original_contract=original_contract,
+            summary=summary,
+            structured_input=structured_input
+        )
+    except Exception as e:
+        logger.warning(f"Pipeline evaluation failed: {e}")
+        return {
+            "error": f"Evaluation failed: {e}",
+            "note": "Clause extraction, risk detection, and summary generation are unaffected."
+        }

@@ -38,7 +38,7 @@ from text_preprocessing import TextPreprocessor
 from clause_extraction import ClauseExtractor
 from risk import RiskDetector
 from SummaryGenerator import SummaryGenerator
-from evaluation import run_pipeline_evaluation
+from evaluation import run_pipeline_evaluation  
 
 RISK_PATTERNS_PATH = "data/important_risk_patterns.json"
 VALID_LEVELS = {"HIGH", "MEDIUM", "LOW"}
@@ -135,16 +135,14 @@ def run_pipeline(raw_text: str) -> dict:
         clause["risks"] = risk_detector.detect_risks(clause["text"])
 
     summary = summary_generator.generate_executive_summary(clauses)
-    print("Summary generated")
-    evaluation = run_pipeline_evaluation(
-    original_contract=raw_text,
-    clauses=clauses,
-    summary=summary,
-    clause_dictionary=clause_extractor.clause_dictionary
 
+    evaluation = run_pipeline_evaluation(
+        original_contract=raw_text,
+        clauses=clauses,
+        summary=summary,
+        clause_dictionary=clause_extractor.clause_dictionary
     )
-    print("Evaluation returned:")
-    print(evaluation)
+
     return {
         "cleaned_text": cleaned,
         "clauses": clauses,
