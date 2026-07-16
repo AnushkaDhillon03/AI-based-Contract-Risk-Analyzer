@@ -415,4 +415,5 @@ if __name__ == "__main__":
     print("  GET    /version  |  /api/v1/health  |  /docs")
     print(" ───────────────────────────────────────────────\n")
 
-    uvicorn.run("app:app", host="127.0.0.1", port=8080, reload=True)
+    import os
+    uvicorn.run("app:app", host="0.0.0.0", port=int(os.environ.get("PORT", 8080)), reload=False)
