@@ -20,7 +20,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-API_BASE = "http://127.0.0.1:8080/api/v1"
+API_BASE = "https://ai-based-contract-risk-analyzer-7z1a.onrender.com/api/v1"
 
 # ─── Clause description mapping (unchanged from v2) ───────────────────────────
 CLAUSE_DESCRIPTIONS = {
